@@ -1,0 +1,72 @@
+#R Code for making Bar graphs and Scatter plots
+#Barchart Condor Autopilot
+
+##### Install ggplot2 package
+#install.packages("ggplot2")
+#install.packages("dplyr")
+library(ggplot2)
+library(scales)
+library(dplyr)
+
+## Read CSV file from folder
+setwd("~/Desktop/Sep_Reports")
+External_data_sep<-read.csv(file="Outgroup_Actor_Sep.csv",header=TRUE,check.names = FALSE)
+External_data_aug<-read.csv(file="Outgroup_Actor_Aug.csv",header=TRUE,check.names = FALSE)
+External_data_jun<-read.csv(file="Outgroup_Actor_Jun.csv",header=TRUE,check.names = FALSE)
+
+## Rename team names (Xing)
+Ex.data$team_name<-as.character(Ex.data$team_name)
+Ex.data$team_name<-replace(Ex.data$team_name,Ex.data$team_name=="CTPCTeam","CPDO")
+Ex.data$team_name<-replace(Ex.data$team_name,Ex.data$team_name=="FinanceTransformation","Finance")
+Ex.data$team_name<-replace(Ex.data$team_name,Ex.data$team_name=="BrandLeads","BrandLeads")
+Ex.data$team_name<-replace(Ex.data$team_name,Ex.data$team_name=="InnovationTeam","Innovation")
+Ex.data$team_name<-as.factor(Ex.data$team_name)
+
+attribute_list <-c("Ego ART [h]", "Alter ART [h]", "Ego Nudges", "Alter Nudges")
+
+for (j in 1:length(attribute_list)){
+  CPDO."attribute_list[j]"<- matrix(1,length(attribute_list)
+  Finance"attribute_list[j]"<- matrix(1,length(attribute_list)
+  BrandLeads."attribute_list[j]"<- matrix(1,length(attribute_list)
+                                                                              
+}
+## Filter down to 4 Teams
+month <- c("sep","aug","jun")
+for (i in 1:length(month)){
+  "month[i]".CPDO <- subset(External_data_"month[i]",team_name=="CPDO")
+  "month[i]".Finance <- subset(External_data_"month[i]",team_name=="Finance")
+  "month[i]".BrandLeads <- subset(External_data_"month[i]",team_name=="BrandLeads")
+  "month[i]".Innovation <- subset(External_data_"month[i]",team_name=="Innovation")
+  
+  for (j in 1:length(attribute_list)){
+    CPDO."attribute_list[j]"[i] <- mean("month[i]".CPDO$"attribute_list[j]")
+    Finance"attribute_list[j]"[i] <- mean("month[i]".Finance$"attribute_list[j]") 
+    BrandLeads."attribute_list[j]"[i] <- mean("month[i]".BrandLeads$"attribute_list[j]")
+  }
+}
+
+this.team<-c("CPDO","Finance","BrandLeads","Innovation")
+for (k in 1:this.team){
+  df<-data.frame(month=rep(c("September","August/July","June"), each=3), this.metric=c("September","August/July","June"), 
+                 Team_name="this.team[k]")
+  bar_chart <-ggplot(df[order(df$month,decreasing=FALSE),],
+                     aes(x=Team_name,y=this.metric,fill=factor(month,levels=rev(levels(month))))) + 
+    geom_bar(stat="identity",position=position_dodge(),width=0.5)+
+    theme_minimal()+guides(fill=guide_legend(reverse=TRUE))+
+    scale_y_continuous(limits=L,oob = rescale_none,expand=c(0,0))
+  
+  bar_chart+
+    coord_flip()+scale_fill_manual(values=c('#0070c0','#002060'))+
+    theme_classic()+
+    theme(panel.grid.major = element_line(colour="grey",size=0.5))+
+    theme(panel.grid.major.y=element_blank())+
+    theme(legend.title=element_blank())+
+    theme(axis.title.x = element_blank())+
+    theme(axis.title.y=element_blank())+
+    theme(axis.text=element_text(colour="black"))+
+    ggtitle(this.attribute_out[i])+
+    theme(plot.title=element_text(hjust=0.5,vjust=0.5,size=11,face="bold"))
+  
+  ggsave(filename=paste(this.team[j],this.attribute_out[i],".png"),
+         scale=1,width=100,height=60,units="mm",dpi="print")  
+}
